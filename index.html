@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>บทเรียนประจำวิชา</title>
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <a class="btn-history" href="page/profile.html" style="text-decoration:none; display:inline-block;">ประวัติผู้จัดทำ</a>
+  
+  </div>
+
+
+
+  <h1>บทเรียนประจำวิชา</h1>
+
+  <div class="grid" id="lessonGrid"></div>
+</div>
+
+<script>
+  // แก้ url ของแต่ละบทให้ตรงกับไฟล์จริงของคุณ
+  const lessons = [
+    { n: 1, title: "พื้นฐานและกระบวนการทํางานของเว็บไซต์", desc: "", url: "page/lessons1.html" },
+    { n: 2, title: "หลักการออกแบบเว็บไซต์", desc: "", url: "page/lessons2.html" },
+    { n: 3, title: "การสร้างเว็บไซต์ด้วย HTML5", desc: "", url: "page/lessons3.html" },
+    { n: 4, title: "การจัดรูปแบบเว็บไซต์ด้วย CSS", desc: "", url: "page/lessons4.html" },
+    { n: 5, title: "การจัดการข้อความและสื่อมัลติมีเดีย", desc: "", url: "page/lessons5.html" },
+    { n: 6, title: "การสร้างข้อมูลตาราง", desc: "", url: "page/lessons6.html" },
+    { n: 7, title: "ระบบการเชื่อมโยง (Hyperlinks)", desc: "", url: "page/lessons7.html" },
+    { n: 8, title: "การออกแบบและสรา้งฟอรม์ (Forms)",desc:"", url: "page/lessons8.html"},
+    { n: 9, title: "JavaScript สมองกลผู้เนรมิตชีวิตให้เว็บไซต์",desc:"", url: "page/lessons9.html"},
+  ];
+
+  const grid = document.getElementById('lessonGrid');
+
+  lessons.forEach(l => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <h3>บทที่ ${l.n}: ${l.title}</h3>
+      <p>${l.desc}</p>
+      <a href="${l.url}" class="btn-enter">เข้าสู่บทเรียน</a>
+    `;
+    grid.appendChild(card);
+  });
+</script>
+
+</body>
+</html>
