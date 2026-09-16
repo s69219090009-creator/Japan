@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>บทที่ 9: JavaScript สมองกลผู้เนรมิตชีวิตให้เว็บไซต์</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --surface-alt: #f1f1f3;
+    --border: #e3e3e7;
+    --text: #18181b;
+    --text-muted: #6b6b72;
+    --accent: #2952e3;
+    --accent-dim: #edf1fe;
+    --accent-ink: #1d3fc4;
+    --code-text: #4338ca;
+    --code-bg: #eef0fd;
+    --radius: 10px;
+    --ch-accent: #C026D3;
+    --ch-dim: #FAE8FF;
+    --ch-ink: #A21CAF;
+    --ch-soft: #FDF4FF;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: "IBM Plex Sans Thai", "Sarabun", "Tahoma", sans-serif;
+    background: var(--bg);
+    margin: 0;
+    padding: 0 0 80px 0;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; }
+
+  .mono { font-family: "IBM Plex Mono", "Consolas", monospace; }
+
+  /* ---- browser-tab style chapter navigator ---- */
+  .tabbar-wrap {
+    background: var(--surface-alt);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tabbar {
+    max-width: 980px;
+    margin: 0 auto;
+    display: flex;
+    gap: 2px;
+    padding: 10px 20px 0 20px;
+    overflow-x: auto;
+  }
+
+  .tabbar a {
+    flex: 0 0 auto;
+    text-decoration: none;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: transparent;
+    padding: 9px 14px;
+    border-radius: 8px 8px 0 0;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .tabbar a .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+  }
+
+  .tabbar a.active {
+    background: var(--surface);
+    border-color: var(--border);
+    border-bottom-color: var(--surface);
+    position: relative;
+    top: 1px;
+    font-weight: 600;
+  }
+
+  .addressbar {
+    max-width: 980px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12.5px;
+    color: var(--text-muted);
+  }
+
+  .addressbar .url::before {
+    content: "○ ";
+    color: #22c55e;
+  }
+
+  .back-link {
+    text-decoration: none;
+    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+  }
+
+  .back-link:hover {
+    color: var(--ch-ink);
+    border-color: var(--ch-accent);
+  }
+
+  /* ---- hero ---- */
+  .hero {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 56px 20px 36px 20px;
+    background: linear-gradient(135deg, var(--ch-soft) 0%, var(--bg) 65%);
+    border-radius: 0 0 20px 20px;
+  }
+
+  .hero .eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--ch-accent);
+    margin: 0 0 14px 0;
+  }
+
+  .hero h1 {
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 0;
+    letter-spacing: -0.01em;
+    color: var(--ch-ink);
+  }
+
+  .hero .sub {
+    margin: 10px 0 0 0;
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .hero .rule {
+    margin-top: 26px;
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(to right, #2563EB, #9333EA, #DB2777, #D97706, #059669, #0D9488, #E11D48, #4F46E5, #C026D3);
+    opacity: 0.85;
+  }
+
+  /* ---- content ---- */
+  .content {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--b-accent, var(--ch-accent));
+    border-radius: var(--radius);
+    padding: 26px 28px 28px 28px;
+  }
+
+  .block .section-eyebrow {
+    display: inline-block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--b-ink, var(--ch-ink));
+    background: var(--b-dim, var(--ch-dim));
+    padding: 3px 9px;
+    border-radius: 999px;
+    margin: 0 0 12px 0;
+    letter-spacing: 0.04em;
+  }
+
+  .block h2 {
+    font-size: 19px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    color: var(--text);
+  }
+
+  .block h3 {
+    font-size: 15.5px;
+    font-weight: 700;
+    margin: 22px 0 10px 0;
+    color: var(--text);
+  }
+
+  .block p {
+    color: var(--text-muted);
+    line-height: 1.85;
+    margin: 0 0 14px 0;
+  }
+
+  .block p:last-child { margin-bottom: 0; }
+
+  ul {
+    margin: 0;
+    padding-left: 20px;
+    line-height: 1.9;
+  }
+
+  li {
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+
+  li b { font-weight: 600; }
+
+  ul ul {
+    margin-top: 10px;
+    padding-left: 20px;
+  }
+
+  ul ul li {
+    color: var(--text-muted);
+  }
+
+  .page-ref {
+    color: #a1a1aa;
+    font-size: 12.5px;
+    font-family: "IBM Plex Mono", monospace;
+  }
+
+  code {
+    background: var(--code-bg);
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-family: "IBM Plex Mono", "Consolas", monospace;
+    font-size: 0.92em;
+    color: var(--code-text);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 6px;
+    font-size: 14.5px;
+  }
+
+  th, td {
+    border: 1px solid var(--border);
+    padding: 12px 14px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background: var(--accent-dim);
+    color: var(--accent-ink);
+    font-weight: 600;
+    font-size: 13.5px;
+  }
+
+  td { color: var(--text-muted); }
+
+  td:first-child {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  /* ---- code window (editor mockup) ---- */
+  .code-window {
+    margin: 4px 0 18px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #1e1e2e;
+    box-shadow: 0 14px 30px -18px rgba(24,24,27,0.5);
+  }
+  .code-window .titlebar {
+    background: #1e1e2e;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .code-window .titlebar span {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .code-window .titlebar .lbl {
+    margin-left: 8px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    color: #a1a1aa;
+  }
+  .code-window pre {
+    margin: 0;
+    background: #131320;
+    padding: 16px 18px;
+    overflow-x: auto;
+  }
+  .code-window code {
+    background: none;
+    padding: 0;
+    color: #e4e4f0;
+    font-size: 13px;
+    line-height: 1.75;
+  }
+  .code-window .tag { color: #7dd3fc; }
+  .code-window .attr { color: #fcd34d; }
+  .code-window .val { color: #a5f3ac; }
+  .code-window .fn { color: #f0abfc; }
+  .code-window .kw { color: #93c5fd; }
+  .code-window .cmt { color: #6b7280; font-style: italic; }
+
+  /* ---- callout ---- */
+  .callout {
+    display: flex;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: var(--b-dim, var(--ch-dim));
+    border: 1px solid var(--border);
+    margin: 4px 0 18px 0;
+  }
+  .callout .ico {
+    flex: 0 0 auto;
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: var(--surface);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--b-ink, var(--ch-ink));
+  }
+  .callout p { margin: 0; color: var(--text); line-height: 1.75; font-size: 14px; }
+
+  /* ---- pill steps ---- */
+  .step-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 4px 0 18px 0;
+  }
+  .step-pill {
+    flex: 1 1 150px;
+    background: var(--b-dim, var(--ch-dim));
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .step-pill .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--b-ink, var(--ch-ink));
+    color: #fff;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .step-pill .title { font-weight: 600; font-size: 13.5px; color: var(--text); margin-bottom: 4px; }
+  .step-pill .desc { font-size: 12.5px; color: var(--text-muted); line-height: 1.6; }
+
+  /* ---- polish: illustration cards ---- */
+  .block-art {
+    margin: 4px 0 20px 0;
+    padding: 16px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--b-dim) 0%, var(--surface) 100%);
+    box-shadow: 0 10px 24px -16px rgba(24,24,27,0.35), inset 0 1px 0 rgba(255,255,255,0.5);
+  }
+  .block-art svg {
+    display: block;
+    width: 100%;
+    height: 118px;
+  }
+
+  .hero-art {
+    max-width: 560px;
+    margin: 26px auto 0 auto;
+    padding: 22px;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--ch-soft) 0%, var(--surface) 100%);
+    box-shadow: 0 18px 40px -20px rgba(24,24,27,0.35), inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+  .hero-art svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* ---- polish: card lift + entrance ---- */
+  .block {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    animation: blockFadeUp 0.55s cubic-bezier(.2,.7,.3,1) both;
+  }
+  .block:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 32px -20px rgba(24,24,27,0.35);
+  }
+  .block:nth-of-type(1) { animation-delay: .03s; }
+  .block:nth-of-type(2) { animation-delay: .10s; }
+  .block:nth-of-type(3) { animation-delay: .17s; }
+  .block:nth-of-type(4) { animation-delay: .24s; }
+  .block:nth-of-type(5) { animation-delay: .31s; }
+  .block:nth-of-type(6) { animation-delay: .38s; }
+
+  @keyframes blockFadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-art, .hero h1, .hero .eyebrow {
+    animation: blockFadeUp 0.6s cubic-bezier(.2,.7,.3,1) both;
+  }
+  .hero .eyebrow { animation-delay: 0s; }
+  .hero h1 { animation-delay: .05s; }
+  .hero-art { animation-delay: .12s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .block, .hero-art, .hero h1, .hero .eyebrow { animation: none !important; }
+    .block:hover { transform: none; }
+  }
+
+  @media (max-width: 640px) {
+    .hero { padding: 40px 18px 28px 18px; }
+    .block { padding: 20px 18px 22px 18px; }
+    .step-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="tabbar-wrap">
+  <nav class="tabbar">
+    <a href="lessons1.html"><span class="dot" style="background:#2563EB"></span>lessons1.html</a>
+    <a href="lessons2.html"><span class="dot" style="background:#9333EA"></span>lessons2.html</a>
+    <a href="lessons3.html"><span class="dot" style="background:#DB2777"></span>lessons3.html</a>
+    <a href="lessons4.html"><span class="dot" style="background:#D97706"></span>lessons4.html</a>
+    <a href="lessons5.html"><span class="dot" style="background:#059669"></span>lessons5.html</a>
+    <a href="lessons6.html"><span class="dot" style="background:#0D9488"></span>lessons6.html</a>
+    <a href="lessons7.html"><span class="dot" style="background:#E11D48"></span>lessons7.html</a>
+    <a href="lessons8.html"><span class="dot" style="background:#4F46E5"></span>lessons8.html</a>
+    <a href="lessons9.html" class="active" style="border-bottom-color:#C026D3; color:#A21CAF;"><span class="dot" style="background:#C026D3"></span>lessons9.html</a>
+  </nav>
+</div>
+<div class="addressbar">
+  <a class="back-link" href="../index.html">&larr; กลับหน้าหลัก</a>
+  <span class="url mono">course.dev/lessons9.html</span>
+</div>
+
+<header class="hero">
+  <p class="eyebrow mono">บทที่ 9 &nbsp;/&nbsp; 9 บท</p>
+  <h1>JavaScript สมองกลผู้เนรมิตชีวิตให้เว็บไซต์</h1>
+  <p class="sub">เปลี่ยนหน้าเว็บที่ตายตัวให้กลายเป็นแอปพลิเคชันที่มีชีวิตชีวาและโต้ตอบได้แบบเรียลไทม์</p>
+  <div class="hero-art"><svg viewBox="0 0 640 210" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+    <rect x="40" y="26" width="170" height="150" rx="14" fill="var(--surface)" stroke="var(--ch-accent)" stroke-width="2"/>
+    <rect x="40" y="26" width="170" height="30" rx="14" fill="var(--ch-dim)"/>
+    <circle cx="58" cy="41" r="4" fill="#EF4444"/>
+    <circle cx="72" cy="41" r="4" fill="#F59E0B"/>
+    <circle cx="86" cy="41" r="4" fill="#22C55E"/>
+    <rect x="56" y="70" width="60" height="9" rx="4.5" fill="var(--ch-ink)" opacity="0.65"/>
+    <text x="60" y="98" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ch-ink)">HTML</text>
+    <text x="60" y="118" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ch-ink)">CSS</text>
+    <text x="60" y="138" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ch-ink)">JS</text>
+    <path d="M225 100 C 255 100, 260 100, 288 100" fill="none" stroke="var(--ch-accent)" stroke-width="3" stroke-dasharray="6 6"/>
+    <path d="M288 100 l-9 -5 l1 10 z" fill="var(--ch-accent)"/>
+    <circle cx="380" cy="100" r="70" fill="var(--ch-ink)" opacity="0.08"/>
+    <path d="M340 60 C 355 40, 405 40, 420 60 C 440 70, 440 100, 420 118 L 340 118 C 320 100, 320 70, 340 60 Z" fill="var(--ch-ink)" opacity="0.9"/>
+    <circle cx="365" cy="82" r="18" fill="#FACC15"/>
+    <circle cx="365" cy="82" r="8" fill="var(--ch-ink)"/>
+    <path d="M383 82 h48" stroke="#FACC15" stroke-width="2" stroke-dasharray="3 4"/>
+    <circle cx="437" cy="82" r="3" fill="#FACC15"/>
+    <path d="M383 92 h60" stroke="#FACC15" stroke-width="2" stroke-dasharray="3 4"/>
+    <circle cx="449" cy="92" r="3" fill="#FACC15"/>
+    <path d="M383 72 h36" stroke="#FACC15" stroke-width="2" stroke-dasharray="3 4"/>
+    <circle cx="425" cy="72" r="3" fill="#FACC15"/>
+    <path d="M365 118 v40" stroke="var(--ch-ink)" stroke-width="4"/>
+  </svg></div>
+  <div class="rule"></div>
+</header>
+
+<main class="content">
+
+  <section class="block" style="--b-accent:#C026D3; --b-dim:#FAE8FF; --b-ink:#A21CAF;">
+    <p class="section-eyebrow">§ 01</p>
+    <h2 style="display:flex;align-items:center;"><span style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:var(--b-dim);color:var(--b-ink);margin-right:10px;flex:0 0 auto;box-shadow:0 2px 6px -2px rgba(0,0,0,.25);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><path d="M12 8v6M8 20l4-6 4 6M9 12H5M19 12h-4"/></svg></span>จากหุ่นยนต์ไร้ชีวิต สู่สมองกลที่คิดได้</h2>
+
+    <p>การสร้างเว็บไซต์เปรียบเสมือนการประกอบหุ่นยนต์หนึ่งตัว ต้องผ่าน 3 เฟสตามลำดับ: <b>HTML</b> คือโครงเหล็ก (Structure) ที่ประกอบชิ้นส่วนให้เป็นรูปร่าง <b>CSS</b> คือเสื้อผ้าและสีสัน (Presentation) ที่ตกแต่งให้ดูสวยงามเป็นระเบียบ ส่วน <b>JavaScript</b> คือสมองกล (Behavior) ระบบไฟฟ้าที่สั่งการให้หุ่นยนต์ขยับ โต้ตอบ และมีความคิดได้จริง หากขาด JavaScript หน้าเว็บก็เป็นได้แค่รูปปั้นสวยงามที่ยืนนิ่งไม่ขยับ</p>
+
+    <div class="step-row">
+      <div class="step-pill"><div class="num">1</div><div class="title">HTML — โครงเหล็ก</div><div class="desc">โครงสร้างและชิ้นส่วนพื้นฐานที่ประกอบกันเป็นรูปร่าง</div></div>
+      <div class="step-pill"><div class="num">2</div><div class="title">CSS — เสื้อผ้าและสีสัน</div><div class="desc">ตกแต่งผิวภายนอกให้ดูสวยงามและเป็นระเบียบ</div></div>
+      <div class="step-pill"><div class="num">3</div><div class="title">JavaScript — สมองกล</div><div class="desc">ระบบไฟฟ้าที่สั่งการให้ขยับ โต้ตอบ และมีความคิด</div></div>
+    </div>
+
+    <h3>ช่องทางการสื่อสารของ JavaScript</h3>
+    <p>ก่อนเริ่มเขียนโค้ด นักพัฒนาควรรู้จักช่องทาง "พูดคุย" กับ JavaScript 2 แบบ:</p>
+    <ul>
+      <li><b>alert()</b> — กล่องป๊อปอัปแจ้งเตือนที่เด้งขึ้นกลางจอ บังคับให้ผู้ใช้กด OK และหยุดการทำงานของเว็บทั้งหมดชั่วคราว เหมาะกับการแจ้งเตือนผู้ใช้งานทั่วไป</li>
+      <li><b>console.log()</b> — พิมพ์ข้อความลงในเครื่องมือ Console (เปิดด้วย F12) ทำงานเงียบ ๆ ไม่รบกวนการอ่านเว็บ เหมาะสำหรับนักพัฒนาใช้ทดสอบโค้ด</li>
+    </ul>
+  </section>
+
+  <section class="block" style="--b-accent:#4F46E5; --b-dim:#E0E7FF; --b-ink:#4338CA;">
+    <p class="section-eyebrow">§ 02</p>
+    <h2 style="display:flex;align-items:center;"><span style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:var(--b-dim);color:var(--b-ink);margin-right:10px;flex:0 0 auto;box-shadow:0 2px 6px -2px rgba(0,0,0,.25);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>การติดตั้งสคริปต์เพื่อปลุกชีพสมองกล</h2>
+
+    <p>การนำ JavaScript เข้าสู่หน้าเว็บทำได้ 2 รูปแบบหลัก ซึ่งเลือกใช้ตามขนาดและลักษณะงาน:</p>
+
+    <table>
+      <tr><th>รูปแบบ</th><th>ลักษณะ</th><th>เปรียบเทียบ</th><th>เหมาะกับ</th></tr>
+      <tr><td>Internal Script</td><td>พิมพ์โค้ดลงในแท็ก <code>&lt;script&gt;</code> วางไว้ก่อนปิด <code>&lt;/body&gt;</code></td><td>โน้ตคำสั่งสั้น ๆ แปะไว้บนตู้เย็น</td><td>โค้ดขนาดเล็กที่ทำงานเฉพาะหน้าเว็บเดียว</td></tr>
+      <tr><td>External Script</td><td>สร้างไฟล์ <code>.js</code> แยก แล้วเชื่อมด้วย <code>&lt;script src="main.js"&gt;&lt;/script&gt;</code></td><td>คู่มือการทำงานแยกเป็นเล่มต่างหาก</td><td>งานมาตรฐานมืออาชีพ โค้ดสะอาด นำกลับมาใช้ร่วมกับหน้าอื่นได้</td></tr>
+    </table>
+
+    <div class="code-window" style="margin-top:18px;">
+      <div class="titlebar"><span style="background:#EF4444"></span><span style="background:#F59E0B"></span><span style="background:#22C55E"></span><span class="lbl">internal-vs-external.html</span></div>
+      <pre><code><span class="cmt">&lt;!-- Internal Script: เขียนแทรกไว้ในหน้าเดียวกัน --&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+  ...
+  <span class="tag">&lt;script&gt;</span>
+    <span class="fn">console</span>.<span class="fn">log</span>(<span class="val">"สวัสดีจากสมองกล"</span>);
+  <span class="tag">&lt;/script&gt;</span>
+<span class="tag">&lt;/body&gt;</span>
+
+<span class="cmt">&lt;!-- External Script: แยกไฟล์ .js แล้วเชื่อมด้วย src --&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val">"main.js"</span><span class="tag">&gt;&lt;/script&gt;</span></code></pre>
+    </div>
+  </section>
+
+  <section class="block" style="--b-accent:#0891B2; --b-dim:#CFFAFE; --b-ink:#0E7490;">
+    <p class="section-eyebrow">§ 03</p>
+    <h2 style="display:flex;align-items:center;"><span style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:var(--b-dim);color:var(--b-ink);margin-right:10px;flex:0 0 auto;box-shadow:0 2px 6px -2px rgba(0,0,0,.25);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg></span>DOM: แผงควบคุมวงจรไฟฟ้าของเว็บไซต์</h2>
+
+    <div class="block-art"><svg viewBox="0 0 400 128" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:110px;display:block;">
+      <rect x="30" y="16" width="340" height="96" rx="10" fill="var(--surface)" stroke="var(--b-accent)" stroke-width="2"/>
+      <rect x="50" y="34" width="60" height="34" rx="6" fill="var(--b-dim)" stroke="var(--b-ink)" stroke-width="1.5"/>
+      <text x="80" y="55" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--b-ink)">&lt;p&gt;</text>
+      <rect x="122" y="34" width="60" height="34" rx="6" fill="var(--b-dim)" stroke="var(--b-ink)" stroke-width="1.5"/>
+      <text x="152" y="55" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--b-ink)">&lt;button&gt;</text>
+      <rect x="194" y="34" width="60" height="34" rx="6" fill="var(--b-dim)" stroke="var(--b-ink)" stroke-width="1.5"/>
+      <text x="224" y="55" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--b-ink)">&lt;div&gt;</text>
+      <circle cx="300" cy="52" r="24" fill="var(--b-ink)"/>
+      <path d="M290 52l7 7 13-13" fill="none" stroke="var(--surface)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="50" y="82" width="280" height="10" rx="5" fill="var(--b-ink)" opacity="0.15"/>
+      <text x="190" y="107" text-anchor="middle" font-family="IBM Plex Sans Thai" font-size="10" fill="var(--b-ink)">Control Panel</text>
+    </svg></div>
+
+    <p>เมื่อเบราว์เซอร์อ่านโค้ด HTML เสร็จ จะสร้าง <b>DOM (Document Object Model)</b> ขึ้นมาครอบทับหน้าเว็บ เปรียบเสมือน "แผงควบคุมวงจรไฟฟ้า" ที่แท็ก HTML ทุกตัวถูกจำลองเป็นสวิตช์บนแผง หน้าที่ของ JavaScript คือการเอื้อมมือเข้าไปสับสวิตช์เหล่านี้ สั่งให้หน้าเว็บขยับหรือเปลี่ยนสีได้แบบเรียลไทม์โดยไม่ต้องกดรีเฟรชหน้าใหม่</p>
+
+    <h3>ขั้นตอนที่ 1: ล็อกเป้าหมายด้วย getElementById</h3>
+    <p>กลไกการทำงานเปรียบเสมือนการ "ประกาศเรียกชื่อพนักงานผ่านเสียงตามสาย" แท็ก HTML ที่มีแอตทริบิวต์ <code>id</code> ตรงกันจะถูก JavaScript ดึงตัวออกมารอรับคำสั่งต่อไปทันที</p>
+
+    <h3>ขั้นตอนที่ 2: เปลี่ยนแปลงเนื้อหาด้วย .innerHTML</h3>
+    <p>เปรียบเสมือนการเดินไปที่ "กระดานไวท์บอร์ด" ลบข้อความเดิมทิ้งจนหมด แล้วเขียนข้อความใหม่ทับลงไป ข้อมูลบนหน้าจอจะเปลี่ยนไปทันทีโดยเบราว์เซอร์ไม่ต้องโหลดหน้าเว็บใหม่</p>
+
+    <div class="code-window">
+      <div class="titlebar"><span style="background:#EF4444"></span><span style="background:#F59E0B"></span><span style="background:#22C55E"></span><span class="lbl">dom-basics.js</span></div>
+      <pre><code><span class="cmt">// 1. ล็อกเป้าหมาย: ค้นหาแท็กที่มี id="promo-text"</span>
+<span class="fn">document</span>.<span class="fn">getElementById</span>(<span class="val">'promo-text'</span>);
+
+<span class="cmt">// 2. เปลี่ยนแปลงความจริง: เขียนข้อความใหม่ทับข้อความเดิม</span>
+<span class="fn">document</span>.<span class="fn">getElementById</span>(<span class="val">'promo-text'</span>).<span class="attr">innerHTML</span> = <span class="val">'ยินดีด้วย! คุณได้รับส่วนลด 50%'</span>;</code></pre>
+    </div>
+  </section>
+
+  <section class="block" style="--b-accent:#D97706; --b-dim:#FEF3C7; --b-ink:#B45309;">
+    <p class="section-eyebrow">§ 04</p>
+    <h2 style="display:flex;align-items:center;"><span style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:var(--b-dim);color:var(--b-ink);margin-right:10px;flex:0 0 auto;box-shadow:0 2px 6px -2px rgba(0,0,0,.25);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></span>ตัวกระตุ้นการทำงาน (Events)</h2>
+
+    <p>Event คือ "กริ่งประตู" ที่คอยดักจับพฤติกรรมของผู้ใช้งานบนหน้าเว็บ เมื่อผู้ใช้ทำกิจกรรมบางอย่าง แอตทริบิวต์ Event จะส่งสัญญาณกระตุ้นให้ชุดคำสั่ง JavaScript (Function) ที่เตรียมไว้ตื่นขึ้นมาทำงานทันที</p>
+
+    <table>
+      <tr><th>Event</th><th>ทำงานเมื่อ</th><th>ใช้ทำอะไร</th></tr>
+      <tr><td>onclick</td><td>ผู้ใช้กดคลิกปุ่มหรือองค์ประกอบนั้น</td><td>ปลุกฟังก์ชันให้เริ่มทำงาน</td></tr>
+      <tr><td>onmouseover</td><td>นำเมาส์ไปวางพาด (ยังไม่คลิก)</td><td>ดึงดูดความสนใจ / แสดงคำอธิบาย</td></tr>
+      <tr><td>onmouseout</td><td>ลากเมาส์ออกจากวัตถุนั้น</td><td>คืนค่ารูปลักษณ์เดิม</td></tr>
+      <tr><td>onkeydown</td><td>เสี้ยววินาทีที่กดปุ่มคีย์บอร์ดลงไป</td><td>ดักจับการเริ่มพิมพ์</td></tr>
+      <tr><td>onkeyup</td><td>ปล่อยนิ้วขึ้นจากปุ่มคีย์บอร์ด</td><td>ตรวจสอบข้อมูลแบบสด (Real-time)</td></tr>
+    </table>
+
+    <h3>การทำงานร่วมกัน: เปลี่ยนข้อความหน้าเว็บด้วยปุ่มกด</h3>
+    <div class="code-window">
+      <div class="titlebar"><span style="background:#EF4444"></span><span style="background:#F59E0B"></span><span style="background:#22C55E"></span><span class="lbl">onclick-demo.html</span></div>
+      <pre><code><span class="cmt">&lt;!-- 1. สร้างเป้าหมายตั้งชื่อ id --&gt;</span>
+<span class="tag">&lt;h2</span> <span class="attr">id</span>=<span class="val">"promo-text"</span><span class="tag">&gt;</span>กำลังเลือกหาโปรโมชัน...<span class="tag">&lt;/h2&gt;</span>
+
+<span class="cmt">&lt;!-- 2. ตัวกระตุ้นรอรับการคลิก --&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">onclick</span>=<span class="val">"getBonus()"</span><span class="tag">&gt;</span>กดเพื่อรับส่วนลด<span class="tag">&lt;/button&gt;</span>
+
+<span class="tag">&lt;script&gt;</span>
+  <span class="cmt">// 3. ชุดคำสั่งรอการทำงาน</span>
+  <span class="kw">function</span> <span class="fn">getBonus</span>() {
+    <span class="cmt">// 4. ล็อกเป้าหมายแล้วเขียนทับข้อความ</span>
+    <span class="fn">document</span>.<span class="fn">getElementById</span>(<span class="val">"promo-text"</span>).<span class="attr">innerHTML</span> =
+      <span class="val">"ยินดีด้วย! คุณได้รับส่วนลด 50% ทันที"</span>;
+  }
+<span class="tag">&lt;/script&gt;</span></code></pre>
+    </div>
+  </section>
+
+  <section class="block" style="--b-accent:#DC2626; --b-dim:#FEE2E2; --b-ink:#B91C1C;">
+    <p class="section-eyebrow">§ 05</p>
+    <h2 style="display:flex;align-items:center;"><span style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:var(--b-dim);color:var(--b-ink);margin-right:10px;flex:0 0 auto;box-shadow:0 2px 6px -2px rgba(0,0,0,.25);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></span>ข้อจำกัดของ HTML5 และระบบตรวจสอบอัจฉริยะแบบ Real-Time</h2>
+
+    <div class="callout">
+      <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg></span>
+      <p>Validation ของ HTML5 (เช่น <code>required</code>, <code>min</code>, <code>max</code>) ตรวจสอบได้แค่กฎพื้นฐาน แต่ไม่สามารถเช็คความซับซ้อนได้ เช่น "รหัสผ่าน 2 ช่องพิมพ์ตรงกันหรือไม่" — นี่คือจุดที่ JavaScript (Custom Validation) เข้ามาทำหน้าที่เป็นพนักงานรักษาความปลอดภัยที่ฉลาดกว่า คอยดึงข้อความที่กำลังพิมพ์ออกมาตรวจสอบด้วยเงื่อนไขที่กำหนดเองได้อย่างอิสระ</p>
+    </div>
+
+    <p>ตัวอย่างการตรวจสอบรหัสผ่านแบบเรียลไทม์: ทุกครั้งที่ผู้ใช้พิมพ์แล้วปล่อยนิ้ว (<code>onkeyup</code>) ระบบจะดึงค่าปัจจุบันในช่องด้วย <code>.value</code> (ดึง "ข้อความ" ที่พิมพ์ ไม่ใช่ทั้งแท็ก HTML) มาเปรียบเทียบทันทีโดยไม่ต้องรอกดปุ่ม Submit</p>
+
+    <div class="code-window">
+      <div class="titlebar"><span style="background:#EF4444"></span><span style="background:#F59E0B"></span><span style="background:#22C55E"></span><span class="lbl">realtime-check.html</span></div>
+      <pre><code><span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="val">"password"</span> <span class="attr">id</span>=<span class="val">"pass1"</span> <span class="attr">onkeyup</span>=<span class="val">"checkPassword()"</span><span class="tag">&gt;</span>
+
+<span class="tag">&lt;script&gt;</span>
+  <span class="kw">function</span> <span class="fn">checkPassword</span>() {
+    <span class="kw">let</span> p1 = <span class="fn">document</span>.<span class="fn">getElementById</span>(<span class="val">"pass1"</span>).<span class="attr">value</span>;
+    <span class="cmt">// นำ p1 ไปเทียบกับรหัสผ่านช่องที่สอง แล้วแสดงผลทันที</span>
+  }
+<span class="tag">&lt;/script&gt;</span></code></pre>
+    </div>
+  </section>
+
+  <section class="block" style="--b-accent:#059669; --b-dim:#D1FAE5; --b-ink:#047857;">
+    <p class="section-eyebrow">สรุปท้ายบท</p>
+    <h2 style="display:flex;align-items:center;"><span style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:var(--b-dim);color:var(--b-ink);margin-right:10px;flex:0 0 auto;box-shadow:0 2px 6px -2px rgba(0,0,0,.25);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 4 21 9 16 9"/></svg></span>วงจรแห่งการโต้ตอบ (The Interactive Loop)</h2>
+
+    <div class="step-row">
+      <div class="step-pill"><div class="num">1</div><div class="title">Trigger</div><div class="desc">ผู้ใช้งานกระทำพฤติกรรมบางอย่าง เช่น onclick, onkeyup</div></div>
+      <div class="step-pill"><div class="num">2</div><div class="title">Radar</div><div class="desc">JS ค้นหา DOM ด้วย getElementById เพื่อระบุชิ้นส่วนที่ต้องจัดการ</div></div>
+      <div class="step-pill"><div class="num">3</div><div class="title">Logic</div><div class="desc">ฟังก์ชันนำข้อมูล (.value) มาประมวลผลตามเงื่อนไข</div></div>
+      <div class="step-pill"><div class="num">4</div><div class="title">Update</div><div class="desc">เปลี่ยนแปลงเนื้อหาหรือสีสันด้วย .innerHTML แบบเรียลไทม์</div></div>
+    </div>
+
+    <p>บทนี้ได้พาเว็บไซต์จาก "หน้ากระดาษนิ่ง" สู่ "จักรกลที่มีชีวิต" โดยมีหลักการสำคัญ 3 ข้อ: <b>DOM คือกุญแจสำคัญ</b> — JavaScript ไม่ได้แก้ไฟล์ HTML โดยตรง แต่ปรับแต่งผ่านแผงควบคุมจำลอง (DOM) เท่านั้น <b>Event คือจุดเริ่มต้น</b> — เว็บไซต์ที่โต้ตอบได้ต้องมีตัวดักจับพฤติกรรมผู้ใช้เสมอ และ <b>UX คือเป้าหมายสูงสุด</b> — การดักจับและตรวจสอบข้อมูลแบบ Real-time ช่วยป้องกันข้อผิดพลาดและยกระดับประสบการณ์ผู้ใช้งานสู่ระดับมืออาชีพ ซึ่งเป็นพื้นฐานสำคัญก่อนต่อยอดสู่การเขียนโปรแกรมเชิงโต้ตอบที่ซับซ้อนยิ่งขึ้นในบทถัดไป</p>
+  </section>
+
+</main>
+
+</body>
+</html>

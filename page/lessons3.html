@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>บทที่ 3: การสร้างเว็บไซต์ด้วย HTML5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --surface-alt: #f1f1f3;
+    --border: #e3e3e7;
+    --text: #18181b;
+    --text-muted: #6b6b72;
+    --accent: #2952e3;
+    --accent-dim: #edf1fe;
+    --accent-ink: #1d3fc4;
+    --code-text: #4338ca;
+    --code-bg: #eef0fd;
+    --radius: 10px;
+    --ch-accent: #DB2777;
+    --ch-dim: #FCE7F3;
+    --ch-ink: #BE185D;
+    --ch-soft: #FDF2F8;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: "IBM Plex Sans Thai", "Sarabun", "Tahoma", sans-serif;
+    background: var(--bg);
+    margin: 0;
+    padding: 0 0 80px 0;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; }
+
+  .mono { font-family: "IBM Plex Mono", "Consolas", monospace; }
+
+  /* ---- browser-tab style chapter navigator ---- */
+  .tabbar-wrap {
+    background: var(--surface-alt);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tabbar {
+    max-width: 980px;
+    margin: 0 auto;
+    display: flex;
+    gap: 2px;
+    padding: 10px 20px 0 20px;
+    overflow-x: auto;
+  }
+
+  .tabbar a {
+    flex: 0 0 auto;
+    text-decoration: none;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: transparent;
+    padding: 9px 14px;
+    border-radius: 8px 8px 0 0;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .tabbar a .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+  }
+
+  .tabbar a.active {
+    background: var(--surface);
+    border-color: var(--border);
+    border-bottom-color: var(--surface);
+    position: relative;
+    top: 1px;
+    font-weight: 600;
+  }
+
+  .addressbar {
+    max-width: 980px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12.5px;
+    color: var(--text-muted);
+  }
+
+  .addressbar .url::before {
+    content: "○ ";
+    color: #22c55e;
+  }
+
+  .back-link {
+    text-decoration: none;
+    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+  }
+
+  .back-link:hover {
+    color: var(--ch-ink);
+    border-color: var(--ch-accent);
+  }
+
+  /* ---- hero ---- */
+  .hero {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 56px 20px 36px 20px;
+    background: linear-gradient(135deg, var(--ch-soft) 0%, var(--bg) 65%);
+    border-radius: 0 0 20px 20px;
+  }
+
+  .hero .eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--ch-accent);
+    margin: 0 0 14px 0;
+  }
+
+  .hero h1 {
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 0;
+    letter-spacing: -0.01em;
+    color: var(--ch-ink);
+  }
+
+  .hero .rule {
+    margin-top: 26px;
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(to right, #2563EB, #9333EA, #DB2777, #D97706, #059669, #0D9488);
+    opacity: 0.85;
+  }
+
+  /* ---- content ---- */
+  .content {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--b-accent, var(--ch-accent));
+    border-radius: var(--radius);
+    padding: 26px 28px 28px 28px;
+  }
+
+  .block .section-eyebrow {
+    display: inline-block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--b-ink, var(--ch-ink));
+    background: var(--b-dim, var(--ch-dim));
+    padding: 3px 9px;
+    border-radius: 999px;
+    margin: 0 0 12px 0;
+    letter-spacing: 0.04em;
+  }
+
+  .block h2 {
+    font-size: 19px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    color: var(--text);
+  }
+
+  .block p {
+    color: var(--text-muted);
+    line-height: 1.85;
+    margin: 0 0 14px 0;
+  }
+
+  .block p:last-child { margin-bottom: 0; }
+
+  ul {
+    margin: 0;
+    padding-left: 20px;
+    line-height: 1.9;
+  }
+
+  li {
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+
+  li b { font-weight: 600; }
+
+  ul ul {
+    margin-top: 10px;
+    padding-left: 20px;
+  }
+
+  ul ul li {
+    color: var(--text-muted);
+  }
+
+  .page-ref {
+    color: #a1a1aa;
+    font-size: 12.5px;
+    font-family: "IBM Plex Mono", monospace;
+  }
+
+  code {
+    background: var(--code-bg);
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-family: "IBM Plex Mono", "Consolas", monospace;
+    font-size: 0.92em;
+    color: var(--code-text);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 6px;
+    font-size: 14.5px;
+  }
+
+  th, td {
+    border: 1px solid var(--border);
+    padding: 12px 14px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background: var(--accent-dim);
+    color: var(--accent-ink);
+    font-weight: 600;
+    font-size: 13.5px;
+  }
+
+  td { color: var(--text-muted); }
+
+  td:first-child {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+
+  /* ---- polish: illustration cards ---- */
+  .block-art {
+    margin: 4px 0 20px 0;
+    padding: 16px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--b-dim) 0%, var(--surface) 100%);
+    box-shadow: 0 10px 24px -16px rgba(24,24,27,0.35), inset 0 1px 0 rgba(255,255,255,0.5);
+  }
+  .block-art svg {
+    display: block;
+    width: 100%;
+    height: 118px;
+  }
+
+  .hero-art {
+    max-width: 560px;
+    margin: 26px auto 0 auto;
+    padding: 22px;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--ch-soft) 0%, var(--surface) 100%);
+    box-shadow: 0 18px 40px -20px rgba(24,24,27,0.35), inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+  .hero-art svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* ---- polish: card lift + entrance ---- */
+  .block {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    animation: blockFadeUp 0.55s cubic-bezier(.2,.7,.3,1) both;
+  }
+  .block:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 32px -20px rgba(24,24,27,0.35);
+  }
+  .block:nth-of-type(1) { animation-delay: .03s; }
+  .block:nth-of-type(2) { animation-delay: .10s; }
+  .block:nth-of-type(3) { animation-delay: .17s; }
+  .block:nth-of-type(4) { animation-delay: .24s; }
+  .block:nth-of-type(5) { animation-delay: .31s; }
+
+  @keyframes blockFadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-art, .hero h1, .hero .eyebrow {
+    animation: blockFadeUp 0.6s cubic-bezier(.2,.7,.3,1) both;
+  }
+  .hero .eyebrow { animation-delay: 0s; }
+  .hero h1 { animation-delay: .05s; }
+  .hero-art { animation-delay: .12s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .block, .hero-art, .hero h1, .hero .eyebrow { animation: none !important; }
+    .block:hover { transform: none; }
+  }
+
+  @media (max-width: 640px) {
+    .hero { padding: 40px 18px 28px 18px; }
+    .block { padding: 20px 18px 22px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="tabbar-wrap">
+  <nav class="tabbar">
+    <a href="lessons1.html"><span class="dot" style="background:#2563EB"></span>lessons1.html</a>
+    <a href="lessons2.html"><span class="dot" style="background:#9333EA"></span>lessons2.html</a>
+    <a href="lessons3.html" class="active" style="border-bottom-color:#DB2777; color:#BE185D;"><span class="dot" style="background:#DB2777"></span>lessons3.html</a>
+    <a href="lessons4.html"><span class="dot" style="background:#D97706"></span>lessons4.html</a>
+    <a href="lessons5.html"><span class="dot" style="background:#059669"></span>lessons5.html</a>
+    <a href="lessons6.html"><span class="dot" style="background:#0D9488"></span>lessons6.html</a>
+    <a href="lessons7.html"><span class="dot" style="background:#E11D48"></span>lessons7.html</a>
+  </nav>
+</div>
+<div class="addressbar">
+  <a class="back-link" href="../index.html">&larr; กลับหน้าหลัก</a>
+  <span class="url mono">course.dev/lessons3.html</span>
+</div>
+
+<header class="hero">
+  <p class="eyebrow mono">บทที่ 3 &nbsp;/&nbsp; 7 บท</p>
+  <h1>การสร้างเว็บไซต์ด้วย HTML5</h1>
+  <div class="hero-art"><svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;"><text x="60" y="130" font-family="IBM Plex Mono, monospace" font-size="90" font-weight="700" fill="var(--ch-dim)">&lt;</text>
+<text x="500" y="130" font-family="IBM Plex Mono, monospace" font-size="90" font-weight="700" fill="var(--ch-dim)">/&gt;</text>
+<rect x="170" y="46" width="90" height="34" rx="17" fill="var(--ch-ink)"/>
+<text x="215" y="68" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="15" fill="#fff">h1</text>
+<rect x="280" y="90" width="100" height="34" rx="17" fill="var(--ch-accent)"/>
+<text x="330" y="112" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="15" fill="#fff">div</text>
+<rect x="175" y="134" width="90" height="34" rx="17" fill="var(--ch-ink)" opacity="0.75"/>
+<text x="220" y="156" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="15" fill="#fff">p</text>
+<rect x="330" y="140" width="100" height="34" rx="17" fill="var(--ch-accent)" opacity="0.75"/>
+<text x="380" y="162" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="15" fill="#fff">ul&gt;li</text></svg></div>
+  <div class="rule"></div>
+</header>
+
+<main class="content">
+  <section class="block" style="--b-accent:#2563EB; --b-dim:#DBEAFE; --b-ink:#1D4ED8;">
+    <p class="section-eyebrow">§ 01</p>
+    <h2 style="display:flex;align-items:center;"><span style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:var(--b-dim);color:var(--b-ink);margin-right:10px;flex:0 0 auto;box-shadow:0 2px 6px -2px rgba(0,0,0,.25);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>พื้นฐานภาษา HTML5 และโครงสร้างไฟล์มาตรฐาน</h2>
+    <div class="block-art"><svg viewBox="0 0 400 128" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:110px;display:block;">
+<rect x="30" y="14" width="110" height="26" rx="13.0" fill="none" stroke="var(--b-ink)" stroke-width="2"/><text x="85.0" y="32.0" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="var(--b-ink)">&lt;html&gt;</text>
+<rect x="50" y="50" width="110" height="26" rx="13.0" fill="none" stroke="var(--b-ink)" stroke-width="2"/><text x="105.0" y="68.0" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="var(--b-ink)">&lt;head&gt;</text>
+<rect x="50" y="86" width="110" height="26" rx="13.0" fill="var(--b-ink)" /><text x="105.0" y="104.0" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#fff">&lt;body&gt;</text>
+<rect x="260" y="14" width="120" height="96" rx="48.0" fill="none" stroke="var(--b-ink)" stroke-width="2"/><text x="320.0" y="67.0" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="var(--b-ink)"></text>
+<text x="320" y="40" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--b-ink)">header</text>
+<text x="320" y="66" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--b-ink)">main</text>
+<text x="320" y="92" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--b-ink)">footer</text>
+<line x1="270" y1="46" x2="370" y2="46" stroke="var(--b-ink)" stroke-width="1.5" opacity="0.4"/>
+<line x1="270" y1="72" x2="370" y2="72" stroke="var(--b-ink)" stroke-width="1.5" opacity="0.4"/>
+</svg></div>
+    <p>ภาษา HTML5 ทำหน้าที่เป็นโครงสร้างหลักของหน้าเว็บ (เปรียบเหมือนเสาเข็มและผนังบ้าน) เวอร์ชันนี้รองรับมัลติมีเดีย (วิดีโอ/เสียง) ได้ในตัว และมี Semantic Tags (แท็กสื่อความหมาย) ที่ช่วยเรื่อง SEO และผู้พิการทางสายตา โครงสร้างพื้นฐาน 3 ส่วนหลัก:</p>
+    <ul>
+        <li><code>&lt;!DOCTYPE html&gt;</code> และ <code>&lt;html&gt;</code>: ประกาศมาตรฐาน HTML5 ที่บรรทัดแรกสุด และใช้แท็ก <code>&lt;html&gt;</code> ครอบคลุมเนื้อหาเว็บทั้งหมด</li>
+        <li><code>&lt;head&gt;</code> และ <code>&lt;title&gt;</code>: ส่วนควบคุมหลังบ้าน (ไม่แสดงบนหน้าจอ) ใช้เก็บข้อมูลเทคนิค และมีแท็ก <code>&lt;title&gt;</code> สำหรับแสดงชื่อบนแท็บของเบราว์เซอร์</li>
+        <li><code>&lt;body&gt;</code>: พื้นที่เนื้อหาหลัก ส่วนที่แสดงผลให้ผู้ใช้งานมองเห็นและโต้ตอบได้ เช่น ข้อความ รูปภาพ หรือปุ่มกด</li>
+        <li><b>การแบ่งสัดส่วนเนื้อหา:</b> ใช้แท็กทั่วไปอย่าง <code>div</code> ในการแบ่งกลุ่มข้อความ (เปรียบเหมือนฉากกั้นห้อง) หรือเปลี่ยนมาใช้แท็กที่มีความหมายของ HTML5 เช่น <code>header</code>, <code>main</code>, <code>footer</code> เพื่อความเป็นมืออาชีพและดีต่อระบบค้นหา</li>
+    </ul>
+  </section>
+
+  <section class="block" style="--b-accent:#DB2777; --b-dim:#FCE7F3; --b-ink:#BE185D;">
+    <p class="section-eyebrow">§ 02</p>
+    <h2 style="display:flex;align-items:center;"><span style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:var(--b-dim);color:var(--b-ink);margin-right:10px;flex:0 0 auto;box-shadow:0 2px 6px -2px rgba(0,0,0,.25);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></span>การใช้งาน Tag และ Attribute จัดการข้อความ</h2>
+    <div class="block-art"><svg viewBox="0 0 400 128" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:110px;display:block;">
+<text x="40" y="60" font-family="IBM Plex Sans Thai" font-weight="700" font-size="40" fill="var(--b-ink)">H1</text>
+<text x="105" y="98" font-family="IBM Plex Sans Thai" font-weight="600" font-size="24" fill="var(--b-ink)" opacity="0.7">H3</text>
+<rect x="200" y="30" width="170" height="7" rx="3.5" fill="var(--b-ink)" opacity="0.6"/><rect x="200" y="45" width="152" height="7" rx="3.5" fill="var(--b-ink)" opacity="0.6"/><rect x="200" y="60" width="134" height="7" rx="3.5" fill="var(--b-ink)" opacity="0.6"/><rect x="200" y="75" width="116" height="7" rx="3.5" fill="var(--b-ink)" opacity="0.6"/>
+</svg></div>
+    <ul>
+        <li><b>Tag & Attribute:</b> แท็กคือคำสั่งควบคุมที่มักมาเป็นคู่ (แท็กเปิด-แท็กปิด) ส่วนแอตทริบิวต์คือคุณสมบัติเสริมที่เติมในแท็กเปิดเพื่อระบุรายละเอียดเฉพาะเจาะจง</li>
+        <li><b>Heading (h1 ถึง h6):</b> แท็กพาดหัวแบ่งตามลำดับความสำคัญ โดย h1 สำคัญที่สุดและควรมีเพียงตัวเดียวในแต่ละหน้าเว็บเพื่อผลดีต่อ SEO</li>
+        <li><b>Paragraph (p):</b> ใช้จัดกลุ่มข้อความยาวๆ เป็นย่อหน้า โดยเบราว์เซอร์จะเว้นระยะห่างบน-ล่างให้อัตโนมัติ</li>
+        <li><b>Line Break (br):</b> แท็กเดี่ยวที่ใช้บังคับขึ้นบรรทัดใหม่ เนื่องจากการกด Enter ในโปรแกรมเขียนโค้ดจะไม่แสดงผลบนหน้าเว็บจริง</li>
+    </ul>
+  </section>
+
+  <section class="block" style="--b-accent:#D97706; --b-dim:#FEF3C7; --b-ink:#B45309;">
+    <p class="section-eyebrow">§ 03</p>
+    <h2 style="display:flex;align-items:center;"><span style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:var(--b-dim);color:var(--b-ink);margin-right:10px;flex:0 0 auto;box-shadow:0 2px 6px -2px rgba(0,0,0,.25);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span>การสร้างรายการข้อมูล (Lists)</h2>
+    <div class="block-art"><svg viewBox="0 0 400 128" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:110px;display:block;">
+<circle cx="45" cy="28" r="4" fill="var(--b-ink)"/><rect x="60" y="22" width="120" height="7" rx="3.5" fill="var(--b-accent)" opacity="0.55"/>
+<circle cx="45" cy="52" r="4" fill="var(--b-ink)"/><rect x="60" y="46" width="90" height="7" rx="3.5" fill="var(--b-accent)" opacity="0.55"/>
+<circle cx="45" cy="76" r="4" fill="var(--b-ink)"/><rect x="60" y="70" width="110" height="7" rx="3.5" fill="var(--b-accent)" opacity="0.55"/>
+<rect x="230" y="16" width="26" height="26" rx="13.0" fill="var(--b-ink)" /><text x="243.0" y="34.0" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#fff">1</text><rect x="266" y="22" width="110" height="7" rx="3.5" fill="var(--b-accent)" opacity="0.55"/>
+<rect x="230" y="50" width="26" height="26" rx="13.0" fill="var(--b-ink)" /><text x="243.0" y="68.0" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#fff">2</text><rect x="266" y="56" width="90" height="7" rx="3.5" fill="var(--b-accent)" opacity="0.55"/>
+<rect x="230" y="84" width="26" height="26" rx="13.0" fill="var(--b-ink)" /><text x="243.0" y="102.0" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="#fff">3</text><rect x="266" y="90" width="100" height="7" rx="3.5" fill="var(--b-accent)" opacity="0.55"/>
+</svg></div>
+    <p>การใช้แท็กรายการช่วยจัดข้อมูลให้เป็นระเบียบ อ่านง่าย และส่งเสริมการทำ Semantic HTML แบ่งเป็น 3 รูปแบบหลัก:</p>
+    <ul>
+        <li><b>รายการแบบไม่มีลำดับ (ul):</b> เหมาะกับข้อมูลที่สลับลำดับได้ แสดงผลเริ่มต้นเป็นจุดวงกลมทึบสีดำ (Disc) โดยมีแท็ก <code>li</code> ครอบข้อมูลย่อยแต่ละข้อ</li>
+        <li><b>รายการแบบมีลำดับ (ol):</b> เหมาะกับข้อมูลที่สลับขั้นตอนไม่ได้ เบราว์เซอร์จะรันตัวเลขให้อัตโนมัติ และมีแอตทริบิวต์เสริม เช่น <code>type</code>, <code>start</code>, <code>reversed</code></li>
+        <li><b>รายการแบบซ้อนทับกัน (Nested Lists):</b> การนำรายการย่อยไปซ้อนไว้ ภายในแท็ก <code>li</code> ของรายการหลัก เพื่อสร้างหมวดหมู่ย่อย</li>
+    </ul>
+  </section>
+
+  <section class="block" style="--b-accent:#059669; --b-dim:#D1FAE5; --b-ink:#047857;">
+    <p class="section-eyebrow">§ 04</p>
+    <h2 style="display:flex;align-items:center;"><span style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:var(--b-dim);color:var(--b-ink);margin-right:10px;flex:0 0 auto;box-shadow:0 2px 6px -2px rgba(0,0,0,.25);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>การตั้งค่าและใช้งานส่วนขยาย (Extensions) ใน VS Code</h2>
+    <div class="block-art"><svg viewBox="0 0 400 128" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:110px;display:block;">
+<rect x="30" y="16" width="340" height="30" rx="6" fill="var(--surface)" stroke="var(--b-accent)" stroke-width="2"/>
+<circle cx="45" cy="31" r="3" fill="var(--b-ink)"/>
+<rect x="60" y="25" width="200" height="12" rx="6" fill="var(--b-dim)"/>
+<rect x="46" y="58" width="80" height="54" rx="8" fill="var(--b-dim)"/>
+<rect x="136" y="58" width="80" height="54" rx="8" fill="var(--b-dim)"/>
+<rect x="226" y="58" width="80" height="54" rx="8" fill="var(--b-dim)"/>
+<path d="M78 85l6 6 12-14" stroke="var(--b-ink)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="176" cy="85" r="14" fill="none" stroke="var(--b-ink)" stroke-width="3"/>
+<path d="M256 78v14M249 85h14" stroke="var(--b-ink)" stroke-width="3"/>
+</svg></div>
+    <ul>
+        <li><b>วิธีเลือกติดตั้งอย่างปลอดภัย:</b> สังเกตเครื่องหมายติ๊กถูก (Verified Publisher) และยอดดาวน์โหลดที่ควรมีหลักล้านขึ้นไป</li>
+        <li><b>Prettier:</b> จัดย่อหน้าและเว้นวรรคโค้ดให้อัตโนมัติเมื่อกดบันทึก</li>
+        <li><b>Error Lens:</b> แจ้งเตือนข้อผิดพลาดและบั๊กสีแดง/เหลืองที่ท้ายบรรทัดทันทีที่พิมพ์ผิด</li>
+        <li><b>Auto Rename Tag:</b> เปลี่ยนชื่อแท็กปิดให้อัตโนมัติเมื่อเราแก้ไขแท็กเปิด</li>
+        <li><b>Auto Close Tag:</b> เติมแท็กปิดให้ทันทีเมื่อพิมพ์แท็กเปิดเสร็จ</li>
+        <li><b>Live Server:</b> ส่วนขยายที่ช่วยจำลองคอมพิวเตอร์ให้เป็น Local Server (HTTP Protocol) แทนการเปิดไฟล์ตรงๆ (File Protocol) ทำให้หน้าจอแสดงผลอัปเดตแบบ Realtime และสามารถทดสอบฟังก์ชันขั้นสูงได้อย่างแม่นยำเหมือนบนอินเทอร์เน็ตจริง</li>
+    </ul>
+  </section>
+
+</main>
+
+</body>
+</html>
